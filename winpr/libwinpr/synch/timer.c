@@ -187,7 +187,7 @@ static void WaitableTimerSignalHandler(int signum, siginfo_t* siginfo, void* arg
 
 static int InstallWaitableTimerSignalHandler(void)
 {
-	if (!g_WaitableTimerSignalHandlerInstalled)
+	if (g_WaitableTimerSignalHandlerInstalled == FALSE)
 	{
 		struct sigaction action;
 		sigemptyset(&action.sa_mask);
@@ -243,7 +243,7 @@ static int InitializeWaitableTimer(WINPR_TIMER* timer)
 		}
 #elif defined(__APPLE__)
 #else
-		WLog_ERR(TAG, "%s: os specific implementation is missing", __FUNCTION__);
+		WLog_ERR(TAG, "%s: os specific implementation is missing (TIMERFD)", __FUNCTION__);
 		result = -1;
 #endif
 	}
@@ -265,7 +265,7 @@ static int InitializeWaitableTimer(WINPR_TIMER* timer)
 
 #elif defined(__APPLE__)
 #else
-		WLog_ERR(TAG, "%s: os specific implementation is missing", __FUNCTION__);
+		WLog_ERR(TAG, "%s: os specific implementation is missing (POSIX)", __FUNCTION__);
 		result = -1;
 #endif
 	}
@@ -407,7 +407,7 @@ BOOL SetWaitableTimer(HANDLE hTimer, const LARGE_INTEGER* lpDueTime, LONG lPerio
 	timer->pfnCompletionRoutine = pfnCompletionRoutine;
 	timer->lpArgToCompletionRoutine = lpArgToCompletionRoutine;
 
-	if (!timer->bInit)
+	if (timer->bInit == FALSE)
 	{
 		if (InitializeWaitableTimer(timer) < 0)
 			return FALSE;
